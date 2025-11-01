@@ -35,7 +35,7 @@ pipeline {
 
         stage('Deploy to AWS') {
             steps {
-                sshagent(['ec2-ssh-key-id']) {
+                sshAgent(['ec2-ssh-key-id']) {
                     script {
                         def imageTag = env.BRANCH_NAME == 'dev' ? 'dev' : 'prod'
                         sh """
