@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -27,8 +26,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
                     script {
                         def imageTag = env.BRANCH_NAME == 'dev' ? 'dev' : 'prod'
-                        sh "echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin"
-                        sh "docker push $DOCKERHUB_USER/${imageTag}:latest"
+                        sh "echo ${DOCKERHUB_PASS} | docker login -u ${DOCKERHUB_USER} --password-stdin"
+                        sh "docker push ${DOCKERHUB_USER}/${imageTag}:latest"
                     }
                 }
             }
@@ -41,10 +40,10 @@ pipeline {
                         def imageTag = env.BRANCH_NAME == 'dev' ? 'dev' : 'prod'
                         sh """
                         ssh -o StrictHostKeyChecking=no ubuntu@${EC2_IP} '
-                            docker pull vishvapranav/${imageTag}:latest &&
+                            docker pull ${DOCKERHUB_USER}/${imageTag}:latest &&
                             docker stop app || true &&
                             docker rm app || true &&
-                            docker run -d -p 80:80 --name app vishvapranav/${imageTag}:latest
+                            docker run -d -p 80:80 --name app ${DOCKERHUB_USER}/${imageTag}:latest
                         '
                         """
                     }
@@ -53,3 +52,4 @@ pipeline {
         }
     }
 }
+
